@@ -15,8 +15,22 @@ export default async function handler(req, res) {
 		body: JSON.stringify({
 			parent: { database_id: databaseId },
 			properties: {
-				Title: {
-					title: [{ text: { content: title } }]
+				제목: {
+					title: [
+						{
+							text: {
+								content: title || "제목 없음"
+							}
+						}
+					]
+				},
+				날짜: {
+					date: {
+						start: new Date().toISOString()
+					}
+				},
+				태그: {
+					multi_select: [{ name: "클라이밍" }]
 				}
 			},
 			children: [
