@@ -3,7 +3,9 @@ import TurndownService from "turndown";
 import { markdownToBlocks } from "../utils/markdownToBlocks.js";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
-const turndown = new TurndownService();
+const turndown = new TurndownService({
+	codeBlockStyle: "fenced" // ← 핵심!
+});
 
 export default async function handler(req, res) {
 	if (req.method === "OPTIONS") {
