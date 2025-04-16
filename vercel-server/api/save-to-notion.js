@@ -1,32 +1,38 @@
-import { Client } from "@notionhq/client";
+// vercel-server/api/save-to-notion.js
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).end();
+	const { title, content } = req.body;
+	const notionToken = process.env.NOTION_TOKEN;
+	const databaseId = process.env.NOTION_DATABASE_ID;
 
-  const { title, content } = req.body;
-  const notion = new Client({ auth: process.env.NOTION_TOKEN });
+	const response = await fetch("https://api.notion.com/v1/pages", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${notionToken}`,
+			"Notion-Version": "2022-06-28",
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify({
+			parent: { database_id: databaseId },
+			properties: {
+				Title: {
+					title: [{ text: { content: title } }]
+				}
+			},
+			children: [
+				{
+					object: "block",
+					type: "paragraph",
+					paragraph: { rich_text: [{ type: "text", text: { content } }] }
+				}
+			]
+		})
+	});
 
-  try {
-    await notion.pages.create({
-      parent: { database_id: process.env.NOTION_DB_ID },
-      properties: {
-        Name: {
-          title: [{ text: { content: title || "Untitled" } }]
-        }
-      },
-      children: [
-        {
-          object: "block",
-          type: "paragraph",
-          paragraph: {
-            text: [{ type: "text", text: { content: content || "No content" } }]
-          }
-        }
-      ]
-    });
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+	if (response.ok) {
+		res.status(200).json({ message: "Saved to Notion!" });
+	} else {
+		const error = await response.text();
+		res.status(500).json({ error });
+	}
 }
