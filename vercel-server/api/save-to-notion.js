@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 					}
 				},
 				태그: {
-					multi_select: [{ name: "클라이밍" }]
+					multi_select: (tags || []).map((tag) => ({ name: tag.name }))
 				}
 			},
 			children: [

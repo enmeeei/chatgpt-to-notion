@@ -3,10 +3,38 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>ChatGPT 저장</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				width: 280px;
+				padding: 16px;
+				background: #fefefe;
+			}
+			input,
+			textarea {
+				width: 100%;
+				margin-bottom: 8px;
+				padding: 6px;
+				font-size: 14px;
+				border: 1px solid #ccc;
+				border-radius: 6px;
+			}
+			button {
+				width: 100%;
+				padding: 8px;
+				background: #015ee3;
+				color: white;
+				border: none;
+				border-radius: 6px;
+				cursor: pointer;
+			}
+		</style>
 	</head>
 	<body>
-		<h3>선택한 텍스트 저장</h3>
+		<input id="titleInput" placeholder="제목을 입력하세요 (선택)" />
+		<input id="tagsInput" placeholder="태그 입력 (쉼표로 구분)" />
 		<button id="saveBtn">노션에 저장하기</button>
+
 		<script src="panel.js"></script>
 	</body>
 </html>
