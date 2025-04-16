@@ -1,3 +1,7 @@
+import TurndownService from "turndown";
+
+const turndown = new TurndownService();
+
 export default async function handler(req, res) {
 	if (req.method === "OPTIONS") {
 		res.setHeader("Access-Control-Allow-Origin", "*");
@@ -8,7 +12,8 @@ export default async function handler(req, res) {
 
 	res.setHeader("Access-Control-Allow-Origin", "*");
 
-	const { title, content } = req.body;
+	const { title, html, tags } = req.body;
+	const content = turndown.turndown(html || "");
 	const notionToken = process.env.NOTION_TOKEN;
 	const databaseId = process.env.NOTION_DATABASE_ID;
 

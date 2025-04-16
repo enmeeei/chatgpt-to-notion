@@ -1,8 +1,9 @@
 {
-  "name": "notion-api-server",
-  "version": "1.0.0",
-  "type": "module",
-  "dependencies": {
-    "@notionhq/client": "^2.2.4"
-  }
+	"name": "notion-markdown-api",
+	"version": "1.0.0",
+	"type": "module",
+	"dependencies": {
+		"@notionhq/client": "^2.2.4",
+		"turndown": "^7.1.1"
+	}
 }

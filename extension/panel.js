@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		chrome.tabs.query({ url: "*://chatgpt.com/*" }, (tabs) => {
 			if (!tabs || tabs.length === 0) {
-				alert("ChatGPT 탭이 열려있지 않아요!");
+				alert("❌ ChatGPT 탭이 열려있지 않아요!");
 				return;
 			}
 
@@ -22,7 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
 			chrome.scripting.executeScript(
 				{
 					target: { tabId: tab.id },
-					func: () => window.getSelection().toString()
+					func: () => {
+						const selection = window.getSelection();
+						if (!selection || selection.rangeCount === 0) return "";
+						const range = selection.getRangeAt(0);
+						const container = document.createElement("div");
+						container.appendChild(range.cloneContents());
+						return container.innerHTML;
+					}
 				},
 				async (results) => {
 					if (!results || !results[0] || !results[0].result) {
@@ -30,12 +37,12 @@ document.addEventListener("DOMContentLoaded", () => {
 						return;
 					}
 
-					const content = results[0].result.trim();
-					const title = titleInput || content.slice(0, 30);
+					const htmlContent = results[0].result.trim();
+					const title = titleInput || htmlContent.replace(/<[^>]+>/g, "").slice(0, 30);
 
 					const payload = {
 						title,
-						content,
+						html: htmlContent,
 						tags
 					};
 
@@ -53,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 						alert("✅ 노션에 저장했어요!");
 					} catch (e) {
 						console.error("❌ 저장 중 오류:", e);
-						alert("노션 저장 중 문제가 발생했어요.");
+						alert("노션 저장 중 문제가 발생했어요 😥");
 					}
 				}
 			);
