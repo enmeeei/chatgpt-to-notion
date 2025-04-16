@@ -20,6 +20,10 @@ export default async function handler(req, res) {
 	const blocks = markdownToBlocks(markdown);
 	const databaseId = process.env.NOTION_DATABASE_ID;
 
+	if (!Array.isArray(blocks) || blocks.length === 0) {
+		throw new Error("❗ 마크다운 변환 결과가 비어 있음");
+	}
+
 	try {
 		await notion.pages.create({
 			parent: { database_id: databaseId },
