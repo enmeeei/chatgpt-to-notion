@@ -1,6 +1,8 @@
+import { Client } from "@notionhq/client";
 import TurndownService from "turndown";
-import { markdownToBlocks } from "../utils/markdownToBlocks.js";
+import { markdownToBlocks } from "../../utils/markdownToBlocks.js";
 
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const turndown = new TurndownService();
 
 export default async function handler(req, res) {
@@ -16,45 +18,28 @@ export default async function handler(req, res) {
 	const { title, html, tags } = req.body;
 	const markdown = turndown.turndown(html || "");
 	const blocks = markdownToBlocks(markdown);
-	const notionToken = process.env.NOTION_TOKEN;
 	const databaseId = process.env.NOTION_DATABASE_ID;
 
-	const response = await fetch("https://api.notion.com/v1/pages", {
-		method: "POST",
-		headers: {
-			Authorization: `Bearer ${notionToken}`,
-			"Notion-Version": "2022-06-28",
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify({
+	try {
+		await notion.pages.create({
 			parent: { database_id: databaseId },
 			properties: {
 				제목: {
-					title: [
-						{
-							text: {
-								content: title || "제목 없음"
-							}
-						}
-					]
-				},
-				날짜: {
-					date: {
-						start: new Date().toISOString()
-					}
+					title: [{ text: { content: title || "제목 없음" } }]
 				},
 				태그: {
-					multi_select: (tags || []).map((tag) => ({ name: tag.name }))
+					multi_select: tags || []
+				},
+				날짜: {
+					date: { start: new Date().toISOString() }
 				}
 			},
 			children: blocks
-		})
-	});
+		});
 
-	if (response.ok) {
 		res.status(200).json({ message: "Saved to Notion!" });
-	} else {
-		const error = await response.text();
-		res.status(500).json({ error });
+	} catch (error) {
+		console.error("❌ Notion 저장 오류:", error);
+		res.status(500).json({ error: error.message || "저장 실패" });
 	}
 }
