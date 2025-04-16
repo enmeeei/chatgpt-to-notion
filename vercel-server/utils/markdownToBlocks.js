@@ -86,17 +86,17 @@ export function markdownToBlocks(markdown) {
 				}
 			}
 		} else if (node.type === "code") {
+			const lines = (node.value || "").split("\n");
+
 			blocks.push({
 				object: "block",
 				type: "code",
 				code: {
 					language: node.lang || "plain text",
-					rich_text: [
-						{
-							type: "text",
-							text: { content: node.value }
-						}
-					]
+					rich_text: lines.map((line, index) => ({
+						type: "text",
+						text: { content: line + (index < lines.length - 1 ? "\n" : "") }
+					}))
 				}
 			});
 		}
