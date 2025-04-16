@@ -1,6 +1,6 @@
 import { Client } from "@notionhq/client";
 import TurndownService from "turndown";
-import { markdownToBlocks } from "../../utils/markdownToBlocks.js";
+import { markdownToBlocks } from "../utils/markdownToBlocks";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const turndown = new TurndownService();
