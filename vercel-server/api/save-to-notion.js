@@ -1,4 +1,5 @@
 import TurndownService from "turndown";
+import { markdownToBlocks } from "../utils/markdownToBlocks.js";
 
 const turndown = new TurndownService();
 
@@ -13,7 +14,8 @@ export default async function handler(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 
 	const { title, html, tags } = req.body;
-	const content = turndown.turndown(html || "");
+	const markdown = turndown.turndown(html || "");
+	const blocks = markdownToBlocks(markdown);
 	const notionToken = process.env.NOTION_TOKEN;
 	const databaseId = process.env.NOTION_DATABASE_ID;
 
@@ -45,13 +47,7 @@ export default async function handler(req, res) {
 					multi_select: (tags || []).map((tag) => ({ name: tag.name }))
 				}
 			},
-			children: [
-				{
-					object: "block",
-					type: "paragraph",
-					paragraph: { rich_text: [{ type: "text", text: { content } }] }
-				}
-			]
+			children: blocks
 		})
 	});
 
