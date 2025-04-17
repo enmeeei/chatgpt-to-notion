@@ -5,6 +5,7 @@ export function markdownToBlocks(markdown) {
 	const tree = remark().use(remarkParse).parse(markdown);
 	const blocks = [];
 
+	console.log("tree", tree);
 	for (const node of tree.children) {
 		if (node.type === "heading") {
 			blocks.push({
