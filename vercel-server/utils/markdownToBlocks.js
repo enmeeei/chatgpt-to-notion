@@ -138,7 +138,15 @@ export function markdownToBlocks(markdown) {
 						{
 							type: "text",
 							text: {
-								content: node.value
+								content
+							},
+							annotations: {
+								bold: false,
+								italic: false,
+								underline: false,
+								strikethrough: false,
+								code: false,
+								color: "default"
 							}
 						}
 					]
